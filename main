@@ -1,0 +1,82 @@
+import time
+import numpy as np
+import cv2
+
+# Попробуем использовать dxcam (быстрее на Windows), иначе mss
+try:
+    import dxcam
+    cam = dxcam.create()
+    use_dx = True
+except ImportError:
+    import mss
+    sct = mss.mss()
+    use_dx = False
+
+# === ТВОИ ПАРАМЕТРЫ ===
+roi = (539, 394, 840, 200)  # (left, top, width, height)
+green_hsv_low = (45, 70, 70)
+green_hsv_high = (95, 255, 255)
+white_thresh = 200
+overlap_pixel_threshold = 5
+# =======================
+
+left, top, width, height = roi
+monitor = {"left": left, "top": top, "width": width, "height": height}
+
+# FPS подсчёт
+frame_count, t0 = 0, time.perf_counter()
+last_cross = 0
+
+print("▶ Наблюдение запущено. Нажми Q в окне для выхода.")
+
+while True:
+    # ---- захват кадра ----
+    if use_dx:
+        frame = cam.grab(region=(left, top, left + width, top + height))
+    else:
+        frame = np.array(sct.grab(monitor))[:, :, :3]  # BGRA→BGR
+
+    # ---- обработка ----
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    # Маска зелёной метки
+    mask_green = cv2.inRange(hsv, np.array(green_hsv_low), np.array(green_hsv_high))
+
+    # Маска белой полосы (яркие участки)
+    mask_white = cv2.inRange(frame, np.array([white_thresh]*3), np.array([255]*3))
+
+    # Пересечение
+    overlap = cv2.bitwise_and(mask_green, mask_white)
+    overlap_count = cv2.countNonZero(overlap)
+
+    crossed = overlap_count > overlap_pixel_threshold
+
+    # ---- визуализация ----
+    # создаём цветное наложение
+    debug = frame.copy()
+    debug[mask_green > 0] = (0, 255, 0)      # зелёная область
+    debug[mask_white > 0] = (255, 255, 255)  # белая полоса
+    debug[overlap > 0] = (0, 0, 255)         # пересечение (красный)
+
+    if crossed:
+        cv2.putText(debug, "CROSS!", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.8, (0, 0, 255), 4)
+        if time.time() - last_cross > 0.25:
+            print(f"[{time.strftime('%H:%M:%S')}] Пересечение обнаружено! Пикселей: {overlap_count}")
+            last_cross = time.time()
+
+    # Показываем FPS и счётчик
+    frame_count += 1
+    if frame_count % 30 == 0:
+        elapsed = time.perf_counter() - t0
+        fps = frame_count / elapsed
+        cv2.putText(debug, f"{fps:.1f} FPS", (10, height - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
+    # ---- вывод ----
+    cv2.imshow("Tracking Debug", debug)
+
+    # выход по Q
+    if cv2.waitKey(1) & 0xFF in (ord('q'), ord('Q')):
+        break
+
+cv2.destroyAllWindows()
+print("⏹ Остановка наблюдения.")

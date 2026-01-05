@@ -9,15 +9,15 @@
 Автоматическая рыбалка должна начаться после первого заброса удочки.
 
 Я вайбкодер и это штучка написана ИИ, для майнкарфта 1.21.1, но скорее всего работает и на других версиях.
+--------------------------------------------------------
 
+Плагин автоматической рыбалки для плгина LiteFish.
 
-Auto-fishing plugin for the LiteFish plugin.
+Как это работает:
+1. Загрузите файл .bat
+2. Начните рубалку в Minecraft
+3. Запустите загруженный файл
 
-How it works:
-1. Download the .bat file
-2. Start fishing in Minecraft
-3. Run the downloaded file
+Автоматическая рыбалка должна начинаться после первого заброса.
 
-Automatic fishing should start after the first cast.
-
-I'm a vibe coder, and this thing is written by AI for Minecraft 1.21.1, but it likely works on other versions as well.
+Я проджрраЀаммист Vibe, и эта штука написѰна исусствѵнѵнѽым нЂллектом длѻя Minecraft 1.21.1, но, еродятно, онѰ роботот и в других ердсиях.

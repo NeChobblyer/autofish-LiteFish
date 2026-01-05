@@ -2,7 +2,7 @@
 Плагин авторыбалка для плгина LiteFish. 
 =
 Как работает:
-1. Скачай файл .бат 
+1. Скачай файл .exe 
 2. Начни рыбалку в майнкрафте
 3. Запусти скаченный файл
 
@@ -15,7 +15,7 @@
 Auto-fishing plugin for the LiteFish plugin.
 
 How it works:
-1. Download the .bat file
+1. Download the .exe file
 2. Start fishing in Minecraft
 3. Run the downloaded file
 
